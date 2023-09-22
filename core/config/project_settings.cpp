@@ -1191,12 +1191,7 @@ void ProjectSettings::refresh_global_class_list() {
 		if (!c.has("class") || !c.has("language") || !c.has("path") || !c.has("base")) {
 			continue;
 		}
-		const StringName &class_name = c["class"];
-		// only pick up new classes (merge)
-		// i.e. don't allow changing the base or path of existing classes
-		if (!ScriptServer::is_global_class(class_name)) {
-			ScriptServer::add_global_class(class_name, c["base"], c["language"], c["path"]);
-		}
+		ScriptServer::add_global_class(c["class"], c["base"], c["language"], c["path"]);
 	}
 }
 
