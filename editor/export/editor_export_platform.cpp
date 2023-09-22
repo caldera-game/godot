@@ -842,7 +842,7 @@ Vector<String> EditorExportPlatform::get_forced_export_files(bool p_main_pack) {
 		}
 
 		String splash = GLOBAL_GET("application/boot_splash/image");
-		if (!splash.is_empty() && FileAccess::exists(splash) && icon != splash) {
+		if (!splash.is_empty() && icon != splash && FileAccess::exists(splash)) {
 			files.push_back(splash);
 		}
 
