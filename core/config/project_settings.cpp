@@ -472,6 +472,9 @@ bool ProjectSettings::_load_resource_pack(const String &p_pack, bool p_replace_f
 	// this pack may have declared new global classes (make sure they are picked up)
 	ProjectSettings::get_singleton()->refresh_global_class_list();
 
+	// this pack may have defined new UIDs, make sure they are cached
+	ResourceUID::get_singleton()->load_from_cache(false);
+
 	//if data.pck is found, all directory access will be from here
 	DirAccess::make_default<DirAccessPack>(DirAccess::ACCESS_RESOURCES);
 	using_datapack = true;
