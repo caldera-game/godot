@@ -522,6 +522,13 @@ bool ResourceCache::has(const String &p_path) {
 	return true;
 }
 
+bool ResourceCache::evict(const String &p_path) {
+	lock.lock();
+	bool was_present = resources.erase(p_path);
+	lock.unlock();
+	return was_present;
+}
+
 Ref<Resource> ResourceCache::get_ref(const String &p_path) {
 	Ref<Resource> ref;
 	lock.lock();
