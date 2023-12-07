@@ -532,7 +532,7 @@ bool ResourceCache::evict(const String &p_path) {
 
 	if (was_present) {
 		listener_lock.lock();
-		for (const EvictionListenRecord& rec : eviction_listeners) {
+		for (const EvictionListenRecord &rec : eviction_listeners) {
 			rec.listener(rec.context, p_path);
 		}
 		listener_lock.unlock();
@@ -612,7 +612,7 @@ void ResourceCache::listen_for_eviction(void *p_context, void (*p_listener)(void
 void ResourceCache::unlisten_for_eviction(void *p_context) {
 	listener_lock.lock();
 
-	for (int i=0; i<eviction_listeners.size();) {
+	for (int i = 0; i < eviction_listeners.size();) {
 		if (eviction_listeners[i].context == p_context) {
 			eviction_listeners.remove_at(i);
 			continue;
