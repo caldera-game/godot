@@ -488,6 +488,9 @@ Mutex ResourceCache::lock;
 RWLock ResourceCache::path_cache_lock;
 #endif
 
+Mutex ResourceCache::listener_lock;
+Vector<EvictionListenRecord> ResourceCache::eviction_listeners;
+
 void ResourceCache::clear() {
 	if (resources.size()) {
 		ERR_PRINT("Resources still in use at exit (run with --verbose for details).");
@@ -526,6 +529,15 @@ bool ResourceCache::evict(const String &p_path) {
 	lock.lock();
 	bool was_present = resources.erase(p_path);
 	lock.unlock();
+
+	if (was_present) {
+		listener_lock.lock();
+		for (const EvictionListenRecord& rec : eviction_listeners) {
+			rec.listener(rec.context, p_path);
+		}
+		listener_lock.unlock();
+	}
+
 	return was_present;
 }
 
@@ -582,4 +594,31 @@ int ResourceCache::get_cached_resource_count() {
 	lock.unlock();
 
 	return rc;
+}
+
+void ResourceCache::listen_for_eviction(void *p_context, void (*p_listener)(void *p_context, const String &p_path)) {
+	ResourceCache::unlisten_for_eviction(p_context);
+
+	listener_lock.lock();
+
+	EvictionListenRecord rec;
+	rec.context = p_context;
+	rec.listener = p_listener;
+	eviction_listeners.push_back(rec);
+
+	listener_lock.unlock();
+}
+
+void ResourceCache::unlisten_for_eviction(void *p_context) {
+	listener_lock.lock();
+
+	for (int i=0; i<eviction_listeners.size();) {
+		if (eviction_listeners[i].context == p_context) {
+			eviction_listeners.remove_at(i);
+			continue;
+		}
+		++i;
+	}
+
+	listener_lock.unlock();
 }
