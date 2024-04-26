@@ -502,7 +502,9 @@ DisplayServer::CursorShape DisplayServer::cursor_get_shape() const {
 }
 
 void DisplayServer::cursor_set_custom_image(const Ref<Resource> &p_cursor, CursorShape p_shape, const Vector2 &p_hotspot) {
-	WARN_PRINT("Custom cursor shape not supported by this display server.");
+	if (p_cursor.is_valid() || p_shape != CURSOR_ARROW || !p_hotspot.is_zero_approx()) {
+		WARN_PRINT("Custom cursor shape not supported by this display server.");
+	}
 }
 
 bool DisplayServer::get_swap_cancel_ok() {
