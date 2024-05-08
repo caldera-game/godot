@@ -810,9 +810,6 @@ OS_MacOS::OS_MacOS() {
 	// Implicitly create shared NSApplication instance.
 	[GodotApplication sharedApplication];
 
-	// Disable our icon in the dock until we either load a non-headless driver or need to display an alert.
-	[NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
-
 	// Menu bar setup must go between sharedApplication above and
 	// finishLaunching below, in order to properly emulate the behavior
 	// of NSApplicationMain.
