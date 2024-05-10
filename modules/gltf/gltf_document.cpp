@@ -112,10 +112,6 @@ static Ref<ImporterMesh> _mesh_to_importer_mesh(Ref<Mesh> p_mesh) {
 }
 
 Error GLTFDocument::_serialize(Ref<GLTFState> p_state) {
-	if (!p_state->buffers.size()) {
-		p_state->buffers.push_back(Vector<uint8_t>());
-	}
-
 	for (Ref<GLTFDocumentExtension> ext : document_extensions) {
 		ERR_CONTINUE(ext.is_null());
 		Error err = ext->export_preserialize(p_state);
@@ -1553,6 +1549,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_ints(Ref<GLTFState> p_state,
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_SCALAR;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_INT;
@@ -1637,6 +1636,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_vec2(Ref<GLTFState> p_state,
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_VEC2;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -1686,6 +1688,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_color(Ref<GLTFState> p_state
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_VEC4;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -1751,6 +1756,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_weights(Ref<GLTFState> p_sta
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_VEC4;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -1798,6 +1806,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_joints(Ref<GLTFState> p_stat
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_VEC4;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_UNSIGNED_SHORT;
@@ -1847,6 +1858,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_quaternions(Ref<GLTFState> p
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_VEC4;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -1912,6 +1926,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_floats(Ref<GLTFState> p_stat
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_SCALAR;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -1958,6 +1975,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_vec3(Ref<GLTFState> p_state,
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_VEC3;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -2026,6 +2046,9 @@ GLTFAccessorIndex GLTFDocument::_encode_accessor_as_xform(Ref<GLTFState> p_state
 	Ref<GLTFAccessor> accessor;
 	accessor.instantiate();
 	GLTFBufferIndex buffer_view_i;
+	if (!p_state->buffers.size()) {
+		p_state->buffers.push_back(Vector<uint8_t>());
+	}
 	int64_t size = p_state->buffers[0].size();
 	const GLTFType type = GLTFType::TYPE_MAT4;
 	const int component_type = GLTFDocument::COMPONENT_TYPE_FLOAT;
@@ -7494,9 +7517,6 @@ Error GLTFDocument::append_from_scene(Node *p_node, Ref<GLTFState> p_state, uint
 	p_state->discard_meshes_and_materials = p_flags & GLTF_IMPORT_DISCARD_MESHES_AND_MATERIALS;
 	p_state->force_generate_tangents = p_flags & GLTF_IMPORT_GENERATE_TANGENT_ARRAYS;
 	p_state->force_disable_compression = p_flags & GLTF_IMPORT_FORCE_DISABLE_MESH_COMPRESSION;
-	if (!p_state->buffers.size()) {
-		p_state->buffers.push_back(Vector<uint8_t>());
-	}
 	// Perform export preflight for document extensions. Only extensions that
 	// return OK will be used for the rest of the export steps.
 	document_extensions.clear();
