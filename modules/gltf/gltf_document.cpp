@@ -250,7 +250,6 @@ Error GLTFDocument::_serialize_gltf_extensions(Ref<GLTFState> p_state) const {
 }
 
 Error GLTFDocument::_serialize_scenes(Ref<GLTFState> p_state) {
-	ERR_FAIL_COND_V_MSG(p_state->root_nodes.size() == 0, ERR_INVALID_DATA, "GLTF export: The scene must have at least one root node.");
 	// Godot only supports one scene per glTF file.
 	Array scenes;
 	Dictionary scene_dict;
@@ -258,7 +257,9 @@ Error GLTFDocument::_serialize_scenes(Ref<GLTFState> p_state) {
 	p_state->json["scenes"] = scenes;
 	p_state->json["scene"] = 0;
 	// Add nodes to the scene dict.
-	scene_dict["nodes"] = p_state->root_nodes;
+	if (!p_state->root_nodes.is_empty()) {
+		scene_dict["nodes"] = p_state->root_nodes;
+	}
 	if (!p_state->scene_name.is_empty()) {
 		scene_dict["name"] = p_state->scene_name;
 	}
@@ -459,9 +460,15 @@ Error GLTFDocument::_serialize_nodes(Ref<GLTFState> p_state) {
 			ERR_CONTINUE(err != OK);
 		}
 
+		if (extensions.is_empty()) {
+			node.erase("extensions");
+		}
+
 		nodes.push_back(node);
 	}
+	if (!nodes.is_empty()) {
 	p_state->json["nodes"] = nodes;
+	}
 	return OK;
 }
 
@@ -7239,20 +7246,28 @@ Error GLTFDocument::_serialize_file(Ref<GLTFState> p_state, const String p_path)
 		file->create(FileAccess::ACCESS_RESOURCES);
 		file->store_32(magic);
 		file->store_32(p_state->major_version); // version
-		file->store_32(header_size + chunk_header_size + text_chunk_length + chunk_header_size + binary_chunk_length); // length
+		uint32_t total_length = header_size + chunk_header_size + text_chunk_length;
+		if (binary_chunk_length) {
+			total_length += chunk_header_size + binary_chunk_length;
+		}
+		file->store_32(total_length);
+
+		// Write the JSON text chunk.
 		file->store_32(text_chunk_length);
 		file->store_32(text_chunk_type);
 		file->store_buffer((uint8_t *)&cs[0], cs.length());
 		for (uint32_t pad_i = text_data_length; pad_i < text_chunk_length; pad_i++) {
 			file->store_8(' ');
 		}
+
+		// Write a single binary chunk.
 		if (binary_chunk_length) {
 			file->store_32(binary_chunk_length);
 			file->store_32(binary_chunk_type);
 			file->store_buffer(p_state->buffers[0].ptr(), binary_data_length);
-		}
-		for (uint32_t pad_i = binary_data_length; pad_i < binary_chunk_length; pad_i++) {
-			file->store_8(0);
+			for (uint32_t pad_i = binary_data_length; pad_i < binary_chunk_length; pad_i++) {
+				file->store_8(0);
+			}
 		}
 	} else {
 		err = _encode_buffer_bins(p_state, p_path);
