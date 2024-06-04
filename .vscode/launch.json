@@ -1,0 +1,66 @@
+{
+    "configurations": [
+        {
+            "name": "Launch Editor",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/godot.macos.editor.dev.arm64",
+            "args": [ 
+                "--editor", 
+                "--path",
+                "../caldera-mmo/content"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "preLaunchTask": "debug build"
+        },
+        {
+            "name": "Launch Project",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/godot.macos.editor.dev.arm64",
+            "args": [
+                "--path",
+                "../caldera-mmo/packaging/thin-client",
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "CALDERA_GD_ENABLE_MOUNTS": "true"
+            },
+            "preLaunchTask": "debug build"
+        },
+        {
+            "name": "Launch Scene",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/godot.macos.editor.dev.arm64",
+            "args": [
+                "--path",
+                "../caldera-mmo/content",
+                "dlc/gameplay/main/gameplay-main.tscn"
+            ],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "CALDERA_GD_ENABLE_MOUNTS": "true"
+            },
+            "preLaunchTask": "debug build"
+        },
+        {
+            "name": "Headless Export",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/godot.macos.editor.dev.arm64",
+            "args": [ 
+                "--headless", 
+                "--script",
+                "res://tools/export-map.gd",
+                "--",
+                "res://server/maps/bespoke/default/",
+                "${workspaceFolder}/../caldera-mmo/build/test-export.physics"
+            ],
+            "cwd": "${workspaceFolder}/../caldera-mmo/content",
+            "env": {},
+            "preLaunchTask": "debug build"
+        },
+    ]
+}
